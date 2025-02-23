@@ -1,3 +1,4 @@
+module LogicaJogador where
 import Data.Maybe (mapMaybe)
 
 -- Definicao das constantes (limites) da tela
