@@ -1,5 +1,7 @@
 module Controll where
-    
+
+-- Criar modulo em LogicaJogador 
+
 import LogicaJogador
 
 -- Captura as teclas para movimentação da nave 
