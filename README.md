@@ -7,7 +7,7 @@
 O *Missão Estelar* é um jogo inspirado no *Space Invaders* e criado como projeto final da disciplina de Paradigmas de Linguagens de Programação.
 
 - [Como executar o Missão Estelar?](#arrow_forward-como-executar-o-Missao-Estelar)
-- [Equipe do Missão Estelar(H)](#pushpin-equipe-do-Missao-Estelar)
+- [Equipe do Missão Estelar](#pushpin-equipe-do-Missao-Estelar)
 
 ## :arrow_forward: Como executar o Missão Estelar?
  
