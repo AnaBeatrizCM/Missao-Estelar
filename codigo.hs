@@ -1,5 +1,6 @@
 module LogicaJogador where
 import Data.Maybe (mapMaybe)
+import Graphics.Gloss
 
 -- Definicao das constantes (limites) da tela
 larguraJanela, alturaJanela:: Float
@@ -9,7 +10,6 @@ alturaJanela = 600
 -- Largura da Nave (a ser definido depois os pixels )
 larguraNave :: Float
 larguraNave = 80
-
 
 -- Raio de colisão da nave (aproximado)
 raioNave:: Float
@@ -22,11 +22,13 @@ data Nave = Nave {
     vida :: Int
 } deriving (Show)
 
+-- Imagem da nave
+imagemNave :: Picture -> Nave _> Picture
+imagemNave img (Nave x _ _) = Translate x(-250) (Scale 0.5 0.5 img)
 
 -- Estado inicial da Nave
 naveInicial:: Nave
 naveInicial = Nave (larguraJanela / 2) 10 3 -- Começa no meio da tela com 3 vidas
-
 
 -- Movimento da nave, limitado dentro da tela
 moverNave:: Nave -> Float -> Nave
@@ -38,7 +40,6 @@ moverNave nave@(Nave posX vel hp) direcao
     where
         novaPosicao = posX + (vel * direcao)
 
-
 -- Tipo para representar um tiro
 data Tiro = Tiro {
     posicaoTiroX:: Float,
@@ -46,6 +47,14 @@ data Tiro = Tiro {
     velocidadeTiro:: Float
 } deriving (Show)
 
+-- Imagem do Tiro
+ImagemTiro :: Tiro -> Picture
+ImagemTiro (Tiro x y _) = Translate (x - larguraJanela / 2) (y - alturaJanela / 2) (Color red (rectangleSolid 5 15))
+
+-- Combinar nave e tiro
+naveTiro :: Picture -> EstadoJogador -> Picture
+naveTiro imgNave (EstadoJogador nave tiros) =
+    Pictures([imagemNave imgNave nave] ++ map imagemTiro tiros)
 
 -- Movimento do Tiro e remocao caso saia da tela
 moverTiro:: Tiro -> Maybe Tiro
@@ -73,7 +82,6 @@ colideComTiro:: Nave -> Tiro -> Bool
 colideComTiro (Nave x _ _) (Tiro tx ty _) 
     = abs(x - tx) < raioNave && ty >= 550
 
-
 -- Verifica se algum tiro inimigo atingiu a nave
 verificarColisoes:: Nave -> [Tiro] -> Nave
 verificarColisoes nave tiros
@@ -100,7 +108,9 @@ moverTiros (EstadoJogador nave tiros) = EstadoJogador nave tirosAtualizados
     where
         tirosAtualizados = mapMaybe moverTiro tiros
 
-
+-- Atualizar estado do jogo - Move o tiro a cada frame
+atualizarEstado :: Float -> EstadoJogador -> EstadoJogador
+atualizarEstado _ = moverTiros
 
 
 
@@ -120,5 +130,15 @@ main = do
     
     print estado4 -- Os tiros foram para cima!
 
+    --Carregare imagem da nave
+    imgNave <- loadBMP "./nave.bmp"
+    --play
+    --   (InWindow "Teste" (round larguraJanela, round alturaJanela) (100, 100)) 
+    --    black 
+    --    60
+    --    (EstadoJogador naveInicial [])
+    --    (imagemNave imgNave)
+    --    (const id) 
+    --    atualizarEstado
 
 
