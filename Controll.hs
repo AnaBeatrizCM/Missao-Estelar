@@ -1,32 +1,17 @@
-module Controll where
+module Controll (inputKey) where
 
--- Criar modulo em LogicaJogador 
+import Graphics.Gloss.Interface.Pure.Game  -- Importa Event para capturar teclas
+import Tipos  -- Importa os tipos compartilhados
+import LogicaJogador (moverNave)  -- Importa moverNave
 
-import LogicaJogador
-
--- Captura as teclas para movimentação da nave 
-
-inputKey :: EstadoJogador -> Char -> EstadoJogador
-
-inputKey (EstadoJogador nave tiros) char
-
-    -- Usando a recepção da tecla 'a' para mover para esquerda
-
-    | char == 'a' = EstadoJogador (moverNave nave (-3)) tiros
-
-    -- USando a recepção da tecla 'd' para mover a direita 
-
-    | char == 'd' = EstadoJogador (moverNave nave 3) tiros
-
-    -- Usando BackSapce para lançar tiros 
-
-    | char == ' ' = EstadoJogador nave(novoTiro : tiros) 
-
-    -- Caso as teclas tratadas não sejam tecladas nada acontece 
-
-    | otherwise = EstadoJogador nave tiros
-
-    -- Criando tiro para armazenar como ativo
-
-    where
-        novoTiro = Tiro (posicaoX nave) 550 7
+-- Captura eventos do teclado para movimentação da nave
+inputKey :: Event -> EstadoJogador -> EstadoJogador
+inputKey (EventKey (Char 'a') Down _ _) (EstadoJogador nave tiros) =
+    EstadoJogador (moverNave nave (-3)) tiros  -- Move a nave para a esquerda
+inputKey (EventKey (Char 'd') Down _ _) (EstadoJogador nave tiros) =
+    EstadoJogador (moverNave nave 3) tiros  -- Move a nave para a direita
+inputKey (EventKey (SpecialKey KeySpace) Down _ _) (EstadoJogador nave tiros) =
+    EstadoJogador nave (novoTiro : tiros)  -- Cria um novo tiro
+  where
+    novoTiro = Tiro (posicaoX nave) (posicaoY nave + raioNave-10) 7  -- Tiro sai da nave e sobe
+inputKey _ estado = estado  -- Ignora outras teclas
