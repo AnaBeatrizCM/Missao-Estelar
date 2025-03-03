@@ -1,7 +1,8 @@
 module Tipos (
     larguraJanela, alturaJanela,
     larguraNave, raioNave,
-    Nave(..), Tiro(..), EstadoJogador(..)
+    Nave(..), Tiro(..), EstadoJogador(..),
+    Invasor(..), EstadoInvasores(..)
 ) where
 
 -- Definição das constantes (limites) da tela
@@ -36,4 +37,19 @@ data Tiro = Tiro {
 data EstadoJogador = EstadoJogador {
     nave :: Nave,
     tirosJogador :: [Tiro]
+} deriving (Show)
+
+-- Tipo para representar um invasor
+data Invasor = Invasor {
+    posicaoInvasorX :: Float,
+    posicaoInvasorY :: Float,
+    velocidadeInvasor :: Float
+} deriving (Show)
+
+-- Tipo para representar o estado dos invasores
+data EstadoInvasores = EstadoInvasores {
+    invasores :: [Invasor],  -- Lista de invasores ativos
+    direcaoInvasores :: Float,  -- Direção de movimento (-1 para esquerda, 1 para direita)
+    tempoProximoTiro :: Float,  -- Tempo até o próximo tiro
+    tirosInimigos :: [Tiro]  -- Lista de tiros ativos dos invasores
 } deriving (Show)
