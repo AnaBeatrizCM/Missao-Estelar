@@ -1,35 +1,9 @@
-module LogicaInvasores where
+module LogicaInvasores (
+    estadoInicialInvasores, moverInvasores, dispararInvasores, verificarColisoesTirosInvasores, atualizarInvasores
+) where
 
 import System.Random (randomRIO)
-
--- Definindo constantes da tela
-larguraJanela :: Float
-larguraJanela = 800
-
-alturaJanela :: Float
-alturaJanela = 600
-
--- Definindo o tipo Tiro
-data Tiro = Tiro {
-    posicaoTiroX :: Float,
-    posicaoTiroY :: Float,
-    velocidadeTiro :: Float
-} deriving (Show)
-
--- Definindo o tipo Invasor
-data Invasor = Invasor {
-    posicaoInvasorX :: Float,
-    posicaoInvasorY :: Float,
-    velocidadeInvasor :: Float
-} deriving (Show)
-
--- Tipo para gerenciar o estado dos invasores
-data EstadoInvasores = EstadoInvasores {
-    invasores :: [Invasor],  -- Lista de invasores ativos
-    direcaoInvasores :: Float,  -- Direção de movimento (-1 para esquerda, 1 para direita)
-    tempoProximoTiro :: Float,  -- Tempo até o próximo tiro
-    tirosInimigos :: [Tiro]  -- Lista de tiros ativos dos invasores
-} deriving (Show)
+import Tipos  -- Importa os tipos compartilhados
 
 -- Estado inicial dos invasores
 estadoInicialInvasores :: EstadoInvasores
