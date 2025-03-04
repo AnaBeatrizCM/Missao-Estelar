@@ -9,7 +9,7 @@ inputKey :: Event -> EstadoJogador -> EstadoJogador
 inputKey (EventKey (Char 'a') Down _ _) (EstadoJogador nave tiros) =
     EstadoJogador (moverNave nave (-3)) tiros  -- Move a nave para a esquerda
 inputKey (EventKey (Char 'd') Down _ _) (EstadoJogador nave tiros) =
-    EstadoJogador (moverNave nave 3) tiros  -- Move a nave para a direita
+    EstadoJogador (moverNave nave 3) tiros -- Move a nave para a direita
 inputKey (EventKey (SpecialKey KeySpace) Down _ _) (EstadoJogador nave tiros) =
     EstadoJogador nave (novoTiro : tiros)  -- Cria um novo tiro
   where

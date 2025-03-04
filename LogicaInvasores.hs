@@ -48,7 +48,7 @@ escolherInvasorAleatorio invs = do
 verificarColisoesTirosInvasores :: [Tiro] -> [Invasor] -> ([Tiro], [Invasor])
 verificarColisoesTirosInvasores tiros invs =
     let tirosRestantes = filter (\tiro -> not (any (colideComTiroInvasor tiro) invs)) tiros
-        invasoresRestantes = filter (\inv -> not (any (colideComTiroInvasor inv) tiros)) invs
+        invasoresRestantes = filter (\inv -> not (any (\tiro -> colideComTiroInvasor tiro inv) tiros)) invs
     in (tirosRestantes, invasoresRestantes)
 
 -- Verifica se um tiro colide com um invasor

@@ -36,7 +36,8 @@ data Tiro = Tiro {
 -- Tipo para armazenar o estado do jogador
 data EstadoJogador = EstadoJogador {
     nave :: Nave,
-    tirosJogador :: [Tiro]
+    tirosJogador :: [Tiro],
+    estadoInvasores :: [EstadoInvasores]
 } deriving (Show)
 
 -- Tipo para representar um invasor

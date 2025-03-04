@@ -1,5 +1,6 @@
 module LogicaJogador (
-    naveInicial, moverNave, imagemNave, naveTiro, moverTiros, atualizarEstado
+    naveInicial, moverNave, imagemNave, naveTiro, moverTiros, atualizarEstado,
+    jogadorVivo, verificarColisoes
 ) where
 
 import Data.Maybe (mapMaybe)
@@ -13,6 +14,10 @@ imagemNave img (Nave x y _ _) = Translate x y (Scale 0.3 0.3 img)
 -- Estado inicial da Nave
 naveInicial :: Nave
 naveInicial = Nave 0 (-alturaJanela/2 + raioNave) 10 3  -- Posição Y ajustada
+
+-- Imagem do invasores
+imagemInvasor :: Picture -> Invasor -> Picture
+imagemInvasor img (Invasor x y _) = Translate x y img
 
 -- Movimento da nave
 moverNave :: Nave -> Float -> Nave
@@ -29,9 +34,11 @@ imagemTiro :: Tiro -> Picture
 imagemTiro (Tiro x y _) = Translate x y (Color red (rectangleSolid 5 15))
 
 -- Combinar nave e tiro
-naveTiro :: Picture -> EstadoJogador -> Picture
-naveTiro imgNave (EstadoJogador nave tiros) =
-    Pictures (imagemNave imgNave nave : map imagemTiro tiros)
+naveTiro :: Picture -> Picture -> EstadoJogador -> Picture
+naveTiro imgNave imgInvasores (EstadoJogador nave tiros invasores) =
+    Pictures (imagemNave imgNave nave 
+           : map imagemTiro tiros 
+           ++ map (imagemInvasor imgInvasores) (invasores estadoInvasores)) -- Agora renderizando os invasores
 
 -- Movimento do Tiro e remoção caso saia da tela
 moverTiro :: Tiro -> Maybe Tiro
@@ -64,15 +71,15 @@ verificarColisoes nave tiros
 
 -- Atirar
 atirar :: EstadoJogador -> EstadoJogador
-atirar estado@(EstadoJogador nave tiros)
-    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros)
+atirar estado@(EstadoJogador nave tiros invasores)
+    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros) invasores
     | otherwise = estado
     where
         novoTiro = Tiro (posicaoX nave) (posicaoY nave + raioNave-10) 7  -- Tiro sai da nave e sobe
 
 -- Mover tiros
 moverTiros :: EstadoJogador -> EstadoJogador
-moverTiros (EstadoJogador nave tiros) = EstadoJogador nave tirosAtualizados
+moverTiros (EstadoJogador nave tiros invasores) = EstadoJogador nave tirosAtualizados invasores
     where
         tirosAtualizados = mapMaybe moverTiro tiros
 

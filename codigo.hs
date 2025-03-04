@@ -1,6 +1,7 @@
 module LogicaJogador where
 import Data.Maybe (mapMaybe)
 import Graphics.Gloss
+import Tipos (EstadoInvasores)
 
 -- Definicao das constantes (limites) da tela
 larguraJanela, alturaJanela:: Float
@@ -23,12 +24,20 @@ data Nave = Nave {
 } deriving (Show)
 
 -- Imagem da nave
-imagemNave :: Picture -> Nave _> Picture
+imagemNave :: Picture -> Nave -> Picture
 imagemNave img (Nave x _ _) = Translate x(-250) (Scale 0.5 0.5 img)
+
+-- Imagem dos invasores
+imagemInimigos :: Picture -> Float -> [(Float, Float)] -> [Picture]
+imagemInimigos imgInvasores deslocamento = 
+    map (\(x, y) -> translate x (y - deslocamento) imgInvasores)
 
 -- Estado inicial da Nave
 naveInicial:: Nave
 naveInicial = Nave (larguraJanela / 2) 10 3 -- Começa no meio da tela com 3 vidas
+
+-- Estado inicial dos invasores
+-- ??
 
 -- Movimento da nave, limitado dentro da tela
 moverNave:: Nave -> Float -> Nave
@@ -48,12 +57,12 @@ data Tiro = Tiro {
 } deriving (Show)
 
 -- Imagem do Tiro
-ImagemTiro :: Tiro -> Picture
-ImagemTiro (Tiro x y _) = Translate (x - larguraJanela / 2) (y - alturaJanela / 2) (Color red (rectangleSolid 5 15))
+imagemTiro :: Tiro -> Picture
+imagemTiro (Tiro x y _) = Translate (x - larguraJanela / 2) (y - alturaJanela / 2) (Color red (rectangleSolid 5 15))
 
 -- Combinar nave e tiro
 naveTiro :: Picture -> EstadoJogador -> Picture
-naveTiro imgNave (EstadoJogador nave tiros) =
+naveTiro imgNave (EstadoJogador nave tiros ) =
     Pictures([imagemNave imgNave nave] ++ map imagemTiro tiros)
 
 -- Movimento do Tiro e remocao caso saia da tela
@@ -91,9 +100,8 @@ verificarColisoes nave tiros
 -- Tipo para armazenar o estado do jogador 
 data EstadoJogador = EstadoJogador {
     nave :: Nave,
-    tirosJogador :: [Tiro] -- Lista de tiros ativos
+    tirosJogador :: [Tiro]
 } deriving (Show)
-
 
 atirar:: EstadoJogador -> EstadoJogador
 atirar estado@(EstadoJogador nave tiros)
@@ -112,7 +120,26 @@ moverTiros (EstadoJogador nave tiros) = EstadoJogador nave tirosAtualizados
 atualizarEstado :: Float -> EstadoJogador -> EstadoJogador
 atualizarEstado _ = moverTiros
 
+-- Tamanho da grade dos invasores (colunas x linhas)
+numCols, numRows :: Int
+numCols = 5
+numRows = 3
 
+-- Espaçamento entre as imagens
+spacingX, spacingY :: Float
+spacingX = 100
+spacingY = 100
+
+-- Posição inicial (opcional, pode ajustar conforme necessário)
+startX, startY :: Float
+startX = -200
+startY = 150
+
+-- Função para gerar a grade de imagens
+generateGrid :: Picture -> [Picture]
+generateGrid img = 
+    [ translate (startX + fromIntegral col * spacingX) (startY - fromIntegral row * spacingY) img 
+    | row <- [0..numRows-1], col <- [0..numCols-1]]
 
 main = do
     let estadoInicial = EstadoJogador naveInicial [] -- Sem tiros no começo
@@ -130,15 +157,6 @@ main = do
     
     print estado4 -- Os tiros foram para cima!
 
-    --Carregare imagem da nave
-    imgNave <- loadBMP "./nave.bmp"
-    --play
-    --   (InWindow "Teste" (round larguraJanela, round alturaJanela) (100, 100)) 
-    --    black 
-    --    60
-    --    (EstadoJogador naveInicial [])
-    --    (imagemNave imgNave)
-    --    (const id) 
-    --    atualizarEstado
+   
 
 
