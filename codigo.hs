@@ -36,18 +36,15 @@ imagemInimigos imgInvasores deslocamento =
 naveInicial:: Nave
 naveInicial = Nave (larguraJanela / 2) 10 3 -- Começa no meio da tela com 3 vidas
 
--- Estado inicial dos invasores
--- ??
-
 -- Movimento da nave, limitado dentro da tela
-moverNave:: Nave -> Float -> Nave
+moverNave :: Nave -> Float -> Nave
 moverNave nave@(Nave posX vel hp) direcao
-    | hp <= 0 = nave -- se morreu, nao se move mais
+    | hp <= 0 = nave -- Se a nave morreu, não se move mais
     | novaPosicao < 0 = Nave 0 vel hp -- Limite Esquerdo
-    | novaPosicao > larguraJanela = Nave larguraJanela vel hp -- Limite Direito
+    | novaPosicao + larguraNave > larguraJanela = Nave (larguraJanela - larguraNave) vel hp -- Limite Direito
     | otherwise = Nave novaPosicao vel hp
-    where
-        novaPosicao = posX + (vel * direcao)
+  where
+    novaPosicao = posX + (vel * direcao)
 
 -- Tipo para representar um tiro
 data Tiro = Tiro {
@@ -59,11 +56,6 @@ data Tiro = Tiro {
 -- Imagem do Tiro
 imagemTiro :: Tiro -> Picture
 imagemTiro (Tiro x y _) = Translate (x - larguraJanela / 2) (y - alturaJanela / 2) (Color red (rectangleSolid 5 15))
-
--- Combinar nave e tiro
-naveTiro :: Picture -> EstadoJogador -> Picture
-naveTiro imgNave (EstadoJogador nave tiros ) =
-    Pictures([imagemNave imgNave nave] ++ map imagemTiro tiros)
 
 -- Movimento do Tiro e remocao caso saia da tela
 moverTiro:: Tiro -> Maybe Tiro
@@ -119,27 +111,6 @@ moverTiros (EstadoJogador nave tiros) = EstadoJogador nave tirosAtualizados
 -- Atualizar estado do jogo - Move o tiro a cada frame
 atualizarEstado :: Float -> EstadoJogador -> EstadoJogador
 atualizarEstado _ = moverTiros
-
--- Tamanho da grade dos invasores (colunas x linhas)
-numCols, numRows :: Int
-numCols = 5
-numRows = 3
-
--- Espaçamento entre as imagens
-spacingX, spacingY :: Float
-spacingX = 100
-spacingY = 100
-
--- Posição inicial (opcional, pode ajustar conforme necessário)
-startX, startY :: Float
-startX = -200
-startY = 150
-
--- Função para gerar a grade de imagens
-generateGrid :: Picture -> [Picture]
-generateGrid img = 
-    [ translate (startX + fromIntegral col * spacingX) (startY - fromIntegral row * spacingY) img 
-    | row <- [0..numRows-1], col <- [0..numCols-1]]
 
 main = do
     let estadoInicial = EstadoJogador naveInicial [] -- Sem tiros no começo

@@ -8,10 +8,10 @@ import Tipos  -- Importa os tipos compartilhados
 -- Estado inicial dos invasores
 estadoInicialInvasores :: EstadoInvasores
 estadoInicialInvasores = EstadoInvasores {
-    invasores = [Invasor x y 2 | x <- [100, 200, 300, 400, 500], y <- [500, 450, 400]],  -- Posições iniciais
-    direcaoInvasores = 1,  -- Começam se movendo para a direita
-    tempoProximoTiro = 2,  -- Tempo inicial para o próximo tiro
-    tirosInimigos = []  -- Sem tiros no início
+    invasores = [Invasor x y 2 | x <- [-200, -100, 0, 100, 200], y <- [400, 350, 300]],
+    direcaoInvasores = 1,
+    tempoProximoTiro = 2,
+    tirosInimigos = []
 }
 
 -- Movimentação dos invasores

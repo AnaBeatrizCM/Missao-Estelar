@@ -37,7 +37,8 @@ data Tiro = Tiro {
 data EstadoJogador = EstadoJogador {
     nave :: Nave,
     tirosJogador :: [Tiro],
-    estadoInvasores :: [EstadoInvasores]
+    estadoInvasores :: EstadoInvasores,
+    pontuacao :: Int
 } deriving (Show)
 
 -- Tipo para representar um invasor
