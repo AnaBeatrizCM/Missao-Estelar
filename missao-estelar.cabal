@@ -1,0 +1,20 @@
+cabal-version:      3.0
+name:               missao-estelar
+version:            0.1.0.0
+license:            MIT
+author:             Seu Nome
+maintainer:         seu-email@exemplo.com
+build-type:         Simple
+
+
+executable missao-estelar
+  main-is:          Main.hs
+  build-depends:    base >=4.13 && <4.18
+                  , random
+                  , gloss
+  hs-source-dirs:   .
+  other-modules:    Controll
+                  , LogicaInvasores
+                  , LogicaJogador
+                  , Tipos
+  default-language: Haskell2010

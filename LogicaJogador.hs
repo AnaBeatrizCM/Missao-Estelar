@@ -1,20 +1,39 @@
 module LogicaJogador (
-    naveInicial, moverNave, imagemNave, naveTiro, moverTiros, atualizarEstado
+    naveInicial, moverNave, imagemNave, naveTiro, moverTiros, atualizarEstado,
+    jogadorVivo, verificarColisoes, estadoInicialJogo
 ) where
 
 import Data.Maybe (mapMaybe)
 import Graphics.Gloss
-import Tipos  -- Importa os tipos compartilhados
+import Tipos
+import LogicaInvasores (estadoInicialInvasores, moverInvasores, verificarColisoesTirosInvasores)
+import Debug.Trace
 
--- Imagem da nave
 imagemNave :: Picture -> Nave -> Picture
 imagemNave img (Nave x y _ _) = Translate x y (Scale 0.3 0.3 img)
 
--- Estado inicial da Nave
 naveInicial :: Nave
-naveInicial = Nave 0 (-alturaJanela/2 + raioNave) 10 3  -- Posição Y ajustada
+naveInicial = Nave 0 (-alturaJanela/2 + raioNave) 10 3
 
--- Movimento da nave
+estadoInicialJogo :: EstadoJogador
+estadoInicialJogo = EstadoJogador naveInicial [] estadoInicialInvasores 0
+
+imagemInvasor :: Picture -> Invasor -> Picture
+imagemInvasor img (Invasor x y _) = Translate x y (Scale 0.2 0.2 img)
+
+desenharPontuacao :: EstadoJogador -> Picture
+desenharPontuacao (EstadoJogador _ _ _ pontuacao) =
+    Translate 200 100 (Scale 0.3 0.3 (Text ("Pontuação: " ++ show pontuacao)))
+
+naveTiro :: Picture -> Picture -> EstadoJogador -> Picture
+naveTiro imgNave imgInvasores estado@(EstadoJogador nave tiros estadoInvasores pontuacao) =
+    let invasoresAtuais = invasores estadoInvasores
+    in trace ("Renderizando invasores: " ++ show invasoresAtuais) $
+        Pictures ( imagemNave imgNave nave
+                   : map imagemTiro tiros
+                   ++ map (imagemInvasor imgInvasores) invasoresAtuais
+                   ++ [desenharPontuacao estado])
+
 moverNave :: Nave -> Float -> Nave
 moverNave nave@(Nave posX posY vel hp) direcao
     | hp <= 0 = nave
@@ -24,58 +43,56 @@ moverNave nave@(Nave posX posY vel hp) direcao
     where
         novaPosicao = posX + (vel * direcao)
 
--- Imagem do Tiro
 imagemTiro :: Tiro -> Picture
 imagemTiro (Tiro x y _) = Translate x y (Color red (rectangleSolid 5 15))
 
--- Combinar nave e tiro
-naveTiro :: Picture -> EstadoJogador -> Picture
-naveTiro imgNave (EstadoJogador nave tiros) =
-    Pictures (imagemNave imgNave nave : map imagemTiro tiros)
-
--- Movimento do Tiro e remoção caso saia da tela
 moverTiro :: Tiro -> Maybe Tiro
 moverTiro (Tiro x y vel)
-    | novaPosicaoY > alturaJanela / 2 = Nothing  -- Remove o tiro se ele sair da tela
+    | novaPosicaoY > alturaJanela / 2 = Nothing
     | otherwise = Just (Tiro x novaPosicaoY vel)
     where
-        novaPosicaoY = y + vel  -- Movendo para cima
+        novaPosicaoY = y + vel
 
--- Reduz a vida do jogador quando atingido
 tomarDano :: Nave -> Nave
 tomarDano (Nave x y vel hp)
     | hp > 0 = Nave x y vel (hp-1)
     | otherwise = Nave x y vel 0
 
--- Verifica se o jogador ainda está vivo
 jogadorVivo :: Nave -> Bool
 jogadorVivo (Nave _ _ _ hp) = hp > 0
 
--- Verifica se um tiro inimigo atingiu a nave
 colideComTiro :: Nave -> Tiro -> Bool
 colideComTiro (Nave x y _ _) (Tiro tx ty _) =
     abs (x - tx) < raioNave && ty >= y && ty <= (y + raioNave)
 
--- Verifica se algum tiro inimigo atingiu a nave
 verificarColisoes :: Nave -> [Tiro] -> Nave
 verificarColisoes nave tiros
     | any (colideComTiro nave) tiros = tomarDano nave
     | otherwise = nave
 
--- Atirar
 atirar :: EstadoJogador -> EstadoJogador
-atirar estado@(EstadoJogador nave tiros)
-    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros)
+atirar estado@(EstadoJogador nave tiros invasores pontuacao)
+    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros) invasores pontuacao
     | otherwise = estado
     where
-        novoTiro = Tiro (posicaoX nave) (posicaoY nave + raioNave-10) 7  -- Tiro sai da nave e sobe
+        novoTiro = Tiro (posicaoX nave) (posicaoY nave + raioNave-10) 7
 
--- Mover tiros
 moverTiros :: EstadoJogador -> EstadoJogador
-moverTiros (EstadoJogador nave tiros) = EstadoJogador nave tirosAtualizados
+moverTiros (EstadoJogador nave tiros invasores pontuacao) = EstadoJogador nave tirosAtualizados invasores pontuacao
     where
         tirosAtualizados = mapMaybe moverTiro tiros
 
--- Atualizar estado do jogo - Move os tiros a cada frame
 atualizarEstado :: Float -> EstadoJogador -> EstadoJogador
-atualizarEstado _ = moverTiros
+atualizarEstado dt estado@(EstadoJogador nave tiros estadoInvasoresVal pontuacao) =  -- Renomeie a variável aqui
+    let estadoComTirosAtualizados = moverTiros estado
+        estadoComInvasoresMovidos = estadoComTirosAtualizados {
+            estadoInvasores = moverInvasores dt (estadoInvasores estadoComTirosAtualizados)  -- Acesse via função
+        }
+        (tirosRestantes, invasoresRestantes) = verificarColisoesTirosInvasores 
+            (tirosJogador estadoComInvasoresMovidos) 
+            (invasores (estadoInvasores estadoComInvasoresMovidos))  -- Acesso correto
+        estadoComInvasoresAtualizados = estadoComInvasoresMovidos {
+            tirosJogador = tirosRestantes,
+            estadoInvasores = (estadoInvasores estadoComInvasoresMovidos) { invasores = invasoresRestantes }  -- Corrigido
+        }
+    in estadoComInvasoresAtualizados
