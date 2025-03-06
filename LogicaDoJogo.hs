@@ -23,13 +23,6 @@ estadoInicial = EstadoJogo {
     jogoAtivo = True
 }
 
--- Atualizar pontuação e nível
-atualizarPontuacao :: EstadoJogo -> Int -> EstadoJogo
-atualizarPontuacao estado pontos =
-    let novaPontuacao = pontuacao estado + pontos
-        novoNivel = 1 + (novaPontuacao `div` 10)  -- Sobe de nível a cada 10 pontos
-    in estado { pontuacao = novaPontuacao, nivel = novoNivel }
-
 -- Perder vida e verificar fim de jogo
 perderVida :: EstadoJogo -> EstadoJogo
 perderVida estado
@@ -47,7 +40,6 @@ atualizarEstadoJogo dt estado = do
     (invasoresAtualizados, tirosInimigos) <- atualizarInvasores dt (invasores estado)
     let jogadorFinal = verificarColisoes (nave jogadorAtualizado) tirosInimigos
         estadoComVida = if not (jogadorVivo jogadorFinal) then perderVida estado else estado
-        estadoComPontuacao = atualizarPontuacao estadoComVida (length tirosInimigos)
         jogoContinua = jogoAtivo estadoComPontuacao
     return estadoComPontuacao {
         jogador = EstadoJogador jogadorFinal (tiros jogadorAtualizado),

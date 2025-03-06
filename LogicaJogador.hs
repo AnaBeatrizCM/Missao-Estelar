@@ -16,23 +16,17 @@ naveInicial :: Nave
 naveInicial = Nave 0 (-alturaJanela/2 + raioNave) 10 3
 
 estadoInicialJogo :: EstadoJogador
-estadoInicialJogo = EstadoJogador naveInicial [] estadoInicialInvasores 0
+estadoInicialJogo = EstadoJogador naveInicial [] estadoInicialInvasores 
 
 imagemInvasor :: Picture -> Invasor -> Picture
 imagemInvasor img (Invasor x y _) = Translate x y (Scale 0.2 0.2 img)
 
-desenharPontuacao :: EstadoJogador -> Picture
-desenharPontuacao (EstadoJogador _ _ _ pontuacao) =
-    Translate 200 100 (Scale 0.3 0.3 (Text ("Pontuação: " ++ show pontuacao)))
-
 naveTiro :: Picture -> Picture -> EstadoJogador -> Picture
-naveTiro imgNave imgInvasores estado@(EstadoJogador nave tiros estadoInvasores pontuacao) =
+naveTiro imgNave imgInvasores estado@(EstadoJogador nave tiros estadoInvasores) =
     let invasoresAtuais = invasores estadoInvasores
-    in trace ("Renderizando invasores: " ++ show invasoresAtuais) $
-        Pictures ( imagemNave imgNave nave
+    in Pictures ( imagemNave imgNave nave
                    : map imagemTiro tiros
-                   ++ map (imagemInvasor imgInvasores) invasoresAtuais
-                   ++ [desenharPontuacao estado])
+                   ++ map (imagemInvasor imgInvasores) invasoresAtuais)
 
 moverNave :: Nave -> Float -> Nave
 moverNave nave@(Nave posX posY vel hp) direcao
@@ -71,19 +65,19 @@ verificarColisoes nave tiros
     | otherwise = nave
 
 atirar :: EstadoJogador -> EstadoJogador
-atirar estado@(EstadoJogador nave tiros invasores pontuacao)
-    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros) invasores pontuacao
+atirar estado@(EstadoJogador nave tiros invasores)
+    | jogadorVivo nave = EstadoJogador nave (novoTiro : tiros) invasores
     | otherwise = estado
     where
         novoTiro = Tiro (posicaoX nave) (posicaoY nave + raioNave-10) 7
 
 moverTiros :: EstadoJogador -> EstadoJogador
-moverTiros (EstadoJogador nave tiros invasores pontuacao) = EstadoJogador nave tirosAtualizados invasores pontuacao
+moverTiros (EstadoJogador nave tiros invasores) = EstadoJogador nave tirosAtualizados invasores
     where
         tirosAtualizados = mapMaybe moverTiro tiros
 
 atualizarEstado :: Float -> EstadoJogador -> EstadoJogador
-atualizarEstado dt estado@(EstadoJogador nave tiros estadoInvasoresVal pontuacao) =  -- Renomeie a variável aqui
+atualizarEstado dt estado@(EstadoJogador nave tiros estadoInvasoresVal) =  -- Renomeie a variável aqui
     let estadoComTirosAtualizados = moverTiros estado
         estadoComInvasoresMovidos = estadoComTirosAtualizados {
             estadoInvasores = moverInvasores dt (estadoInvasores estadoComTirosAtualizados)  -- Acesse via função
