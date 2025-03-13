@@ -1,7 +1,7 @@
 
 # :flying_saucer: Missão Estelar :space_invader:
 <p align=center>
-  <img width=350 Haskell="./bmps/nave.bmp"/> 
+  <img width=350 src="/Haskell/bmps/nave.bmp"/> 
 </p>
 
 O *Missão Estelar* é um jogo inspirado no *Space Invaders* e criado como projeto final da disciplina de Paradigmas de Linguagens de Programação.
