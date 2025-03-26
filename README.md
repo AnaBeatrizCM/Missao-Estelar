@@ -25,4 +25,4 @@ O *Missão Estelar* é um jogo inspirado no *Space Invaders* e criado como proje
 - [Ewerton Fernandes]
 - [José Efraim Almeida]
 - [Rodrigo Paulo de Oliveira]
-- [Thais Nicole Freitas]
+- [Thais Nicole Freitas de Oliveira]
