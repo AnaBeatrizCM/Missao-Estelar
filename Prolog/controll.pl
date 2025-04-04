@@ -1,24 +1,23 @@
 :- module(controll, [cap/1]).
-:- use_module('logicaJogador').
+:- use_module(logicaJogador).
+:- use_module(main, [jogo_estado/3, renderizar_jogo/3]).
+
 
 cap('a') :- 
-    nave(Vida, Vel, PosX, PosY),
-    mover_nave_esq(nave(Vida, Vel, PosX, PosY), Direcao, NovaNave),
-    retractall(nave(_, _, _, _)), 
-    assertz(NovaNave).
-    /*,write('Movendo para a esquerda'), nl.*/
+    jogo_estado(Window, Nave, Invasores),
+    mover_nave_esq(Nave, NovaNave),
+    atualizar_estado(Window, NovaNave, Invasores).
 
 cap('d') :- 
-    nave(Vida, Vel, PosX, PosY),  
-    mover_nave_dir(nave(Vida, Vel, PosX, PosY), Direcao, NovaNave),
-    retractall(nave(_, _, _, _)), 
-    assertz(NovaNave).
-    /*write('direita'), nl.*/
+    jogo_estado(Window, Nave, Invasores),
+    mover_nave_dir(Nave, NovaNave),
+    atualizar_estado(Window, NovaNave, Invasores).
 
 cap('w') :- 
-    nave(Vida, Vel, PosX, PosY), 
-    atirar(nave(Vida, Vel, PosX, PosY)).
-
+    jogo_estado(Window, Nave, Invasores),
+    atirar(Nave),
+    atualizar_estado(Window, Nave, Invasores).
+  
 cap(' ') :- 
     nave(Vida, Vel, PosX, PosY), 
     atirar(nave(Vida, Vel, PosX, PosY)).  

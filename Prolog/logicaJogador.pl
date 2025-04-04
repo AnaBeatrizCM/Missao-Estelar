@@ -1,5 +1,5 @@
-:- module(logicaJogador, [nave/4, naveInicial/1, nave/3, mover_nave_dir/3, 
-    mover_nave_esq/3, atirar/1, atualizar_nave/2]).
+:- module(logicaJogador, [nave/4, naveInicial/1, desenho_nave/3, mover_nave_dir/2, 
+    mover_nave_esq/2, atirar/1, atualizar_nave/2, atualizar_estado/3]).
 :- consult('controll').
 
 /* Definição do estado inicial da nave
@@ -17,14 +17,14 @@ tiros_ativos([]).
 :- dynamic jogo_ativo/1.
 jogo_ativo(sim).
 
-nave(Window, X, Y) :-
+desenho_nave(Window, X, Y) :-
     new(Nave, box(80, 30)),
     send(Nave, fill_pattern, colour(blue)),
     send(Window, display, Nave, point(X, Y)).
 
 naveInicial(nave(3, 4, 200, 600)).
-
 atualizar_nave(Nave, Nave).
+
 % Predicado para tomar dano
 tomar_dano(nave(Vida, Vel, PosX, PosY), nave(NovaVida, Vel, PosX, PosY)) :-
     verifica_vida(Vida),
@@ -56,7 +56,7 @@ mover_nave_esq(nave(Vida, Vel, PosX, PosY), nave(Vida, Vel, NovaPosX, PosY)) :-
     NovaPosX is max(0, PosX - Vel).
 
 % Movimenta a nave para a direita
-mover_nave_dir(nave(Vida, Vel, PosX, PosY), Direcao, nave(Vida, Vel, NovaPosX, PosY)) :-
+mover_nave_dir(nave(Vida, Vel, PosX, PosY), nave(Vida, Vel, NovaPosX, PosY)) :-
     NovaPosX is min(600, PosX + Vel).
 
 atirar(nave(Vida, _, PosX, _)):-
@@ -77,5 +77,9 @@ atualizar_tiros:-
         NovosTiros),
     retractall(tiros_ativos(_)),
     assertz(tiros_ativos(NovosTiros)).
+
+atualizar_estado(Window, NovaNave, Invasores) :-
+    retractall(jogo_estado(_, _, _)),
+    assertz(jogo_estado(Window, NovaNave, Invasores)).
 
             
