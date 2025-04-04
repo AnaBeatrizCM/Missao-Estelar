@@ -2,8 +2,7 @@
 :- use_module('logicaJogador').
 
 cap('a') :- 
-    nave(Vida, Vel, PosX, PosY),  
-    Direcao is -3, 
+    nave(Vida, Vel, PosX, PosY),
     mover_nave_esq(nave(Vida, Vel, PosX, PosY), Direcao, NovaNave),
     retractall(nave(_, _, _, _)), 
     assertz(NovaNave).
@@ -11,7 +10,6 @@ cap('a') :-
 
 cap('d') :- 
     nave(Vida, Vel, PosX, PosY),  
-    Direcao is 3,  
     mover_nave_dir(nave(Vida, Vel, PosX, PosY), Direcao, NovaNave),
     retractall(nave(_, _, _, _)), 
     assertz(NovaNave).
@@ -24,3 +22,7 @@ cap('w') :-
 cap(' ') :- 
     nave(Vida, Vel, PosX, PosY), 
     atirar(nave(Vida, Vel, PosX, PosY)).  
+
+tecla_pressionada(Key) :-
+    atom_string(AtomKey, Key),
+    cap(AtomKey).

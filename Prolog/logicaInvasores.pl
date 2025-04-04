@@ -1,24 +1,27 @@
-% Tipos de dados
+:- module(logicaInvasores, [invasor/2, estado_inicial_invasores/1, atualizar_invasores/2]).
+
 :- dynamic invasor/3.  % invasor(X, Y, Velocidade)
 :- dynamic tiro/3.     % tiro(X, Y, Velocidade)
-:- dynamic estado_invasores/4. % estado_invasores([Invasores], Direcao, TempoProximoTiro, [Tiros])
+:- dynamic estado_invasores/4. 
 
 % Constantes
 largura_janela(400).
 altura_janela(600).
 
 invasor(Window, invasor(X, Y, _)) :-
-    new(Invasor, box(20, 20)),
+    new(Invasor, box(40, 30)),
     send(Invasor, fill_pattern, colour(green)),
     send(Window, display, Invasor, point(X, Y)).
 
 %Estado inicial
 estado_inicial_invasores(Estado) :-
     findall(invasor(X, Y, 2), 
-           (member(X, [-150, -75, 0, 75, 150]), 
+           (member(X, [-330, -255, -180, -105, 30, 105, 180, 255, 330]), 
             member(Y, [200, 150, 100])),
            Invasores),
     Estado = estado_invasores(Invasores, 1, 2, []).
+
+atualizar_invasores(Estado, Estado).
 
 %mover Invasores
 mover_invasores(DT, Estado, NovoEstado) :-

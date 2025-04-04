@@ -1,9 +1,10 @@
-:- module(logicaJogador, [nave/4, naveInicial/1, nave/3, mover_nave_dir/3, mover_nave_esq/3, atirar/1]).
+:- module(logicaJogador, [nave/4, naveInicial/1, nave/3, mover_nave_dir/3, 
+    mover_nave_esq/3, atirar/1, atualizar_nave/2]).
 :- consult('controll').
 
 /* Definição do estado inicial da nave
 (vida, velocidade, PosX, posY) */
-nave(3, 4, 200, 500).
+nave(3, 4, 200, 600).
 
 /* Definição do tiro que sai da nave
 (PosX, PosY, velocidade). */
@@ -17,12 +18,13 @@ tiros_ativos([]).
 jogo_ativo(sim).
 
 nave(Window, X, Y) :-
-    new(Nave, box(40, 20)),
+    new(Nave, box(80, 30)),
     send(Nave, fill_pattern, colour(blue)),
     send(Window, display, Nave, point(X, Y)).
 
 naveInicial(nave(3, 4, 200, 600)).
 
+atualizar_nave(Nave, Nave).
 % Predicado para tomar dano
 tomar_dano(nave(Vida, Vel, PosX, PosY), nave(NovaVida, Vel, PosX, PosY)) :-
     verifica_vida(Vida),
