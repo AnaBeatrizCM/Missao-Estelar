@@ -1,6 +1,7 @@
 % inimigos.pl
 :- dynamic invasores_ativos/1.
 :- dynamic tiros_inimigos_ativos/1.
+:- consult('logica_jogador.pl').
 
 invasores_ativos([
     invasor(50, 100, 2), invasor(100, 100, 2), invasor(150, 100, 2), invasor(200, 100, 2), invasor(250, 100, 2),
@@ -9,6 +10,7 @@ invasores_ativos([
 ]).
 
 tiros_inimigos_ativos([]).
+
 
 desenhar_invasores :-
     janela(Window),
@@ -109,6 +111,9 @@ desenhar_tiros_inimigos :-
             send(Window, display, Bala)
         )
     ).
+
+% Adcionando a logica de ganharse não existir mais invasores 
+
 verificar_colisoes_tiros :-
     tiros_ativos(Tiros),
     invasores_ativos(Invasores),
@@ -135,5 +140,41 @@ verificar_colisoes_tiros :-
     retractall(tiros_ativos(_)),
     assertz(tiros_ativos(TirosFiltrados)),
     retractall(invasores_ativos(_)),
-    assertz(invasores_ativos(InvasoresFiltrados)).
+    assertz(invasores_ativos(InvasoresFiltrados)),
+    ( InvasoresFiltrados = [], \+ jogo_acabado ->
+    assertz(jogo_acabado),
+    you_win
+    ; true
+    ).
+    
+% mexendooo colisão tiro inimigo com nave
+
+verificar_colisoes_tiros_inimigos :-
+    tiros_inimigos_ativos(Tiros),
+    nave(Vida, Vel, NaveX, NaveY),
+    get_nave_dimensions(Largura, Altura),
+    LimiteEsquerda is NaveX - (Largura // 2),
+    LimiteDireita is NaveX + (Largura // 2),
+    NovaY is 600 - Altura,
+    (   
+        member(tiro_inimigo(X, Y, _), Tiros),
+        Y >= NovaY,
+        X >= LimiteEsquerda,
+        X =< LimiteDireita
+    ->
+        tomar_dano(nave(Vida, Vel, NaveX, NaveY), NovaNave),
+        retractall(nave(_,_,_,_)),
+        (
+            NovaNave = nave(0, _, _, _) ->
+                true  % jogo acabou, não salva a nova nave
+            ;
+                assertz(NovaNave)
+        ),
+        % remove o tiro que colidiu
+        delete(Tiros, tiro_inimigo(X, Y, _), TirosRestantes),
+        retractall(tiros_inimigos_ativos(_)),
+        assertz(tiros_inimigos_ativos(TirosRestantes))
+    ; true).
+
+get_nave_dimensions(60, 60). 
 

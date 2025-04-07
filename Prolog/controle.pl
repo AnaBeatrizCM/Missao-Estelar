@@ -2,30 +2,29 @@
 :- consult('logica_jogador.pl').
 :- dynamic nave/4.
 
+tecla_pressionada(_) :-
+    jogo_acabado, !.
+
 tecla_pressionada('a') :-
+    \+ jogo_acabado,
     move_esquerda,
     desenhar_nave.
 
 tecla_pressionada('d') :-
+    \+ jogo_acabado,
     move_direita,
     desenhar_nave.
 
-tecla_pressionada('w') :-
-    atirar(_),
-    mostrar_tiros,
-    desenhar_nave.
 
 tecla_pressionada('SPC') :-
-    write('espaco pressionado'), nl,  % DEBUG
+
+    \+ jogo_acabado,
     nave(V, Vel, X, Y),
     atirar(nave(V, Vel, X, Y)),
-    mostrar_tiros,
     desenhar_nave.
 
 
-tecla_pressionada(K) :-
-    format('Tecla pressionada: ~w~n', [K]),
-    true.
+
 
 
 move_esquerda :-

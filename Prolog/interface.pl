@@ -3,6 +3,8 @@
 :- consult('logica_jogador.pl').
 :- consult('controle.pl').
 :- consult('inimigos.pl').
+:- consult('start_screen.pl').
+:- initialization(start_screen).
 
 :- dynamic animacao/1.
 :- dynamic janela/1.
@@ -60,6 +62,7 @@ atualizar_tela :-
     atualizar_tiros,
     atualizar_tiros_inimigos,
     verificar_colisoes_tiros,
+    verificar_colisoes_tiros_inimigos,
     talvez_disparar,
     mover_invasores,
     redesenhar_tiros.
@@ -77,3 +80,5 @@ criar_janela :-
     new(J, window('Missao Estelar', size(400, 600))),
     assertz(janela(J)),
     send(J, open).
+
+

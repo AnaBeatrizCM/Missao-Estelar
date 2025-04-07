@@ -1,22 +1,55 @@
 % logica_jogador.pl
 :- dynamic nave/4.
 :- dynamic tiros_ativos/1.
+:- dynamic jogo_acabado/0.
 
 % Estado inicial da nave: vida, velocidade, X, Y
 nave(3, 4, 175, 0).
 tiros_ativos([]).
 
-% Predicado para tomar dano
+% Predicado para tomar dano // MEXI
+
 tomar_dano(nave(Vida, Vel, PosX, PosY), nave(NovaVida, Vel, PosX, PosY)) :-
     verifica_vida(Vida),
     (Vida - 1 =< 0 ->
         NovaVida is 0,
+        assertz(jogo_acabado),
         game_over();
         NovaVida is Vida - 1).
 
-% Mensagem de game over
-game_over() :-
-    write("Você perdeu! 💔"), nl.
+% Mensagem de game over     MEXI AQUI
+
+
+game_over :-
+
+    janela(J),
+    send(J, clear),
+
+    new(Window, dialog('Game Over')),
+
+    new(Msg, text('Game Over!', center)),
+    send(Msg, font, font(times, bold, 40)),
+    send(Msg, colour, red),
+    send(Window, append, Msg),
+    send(Window, open).
+
+% Criando predicado para ganho
+
+you_win :-
+    janela(J),
+    animacao(Timer),
+    send(Timer, stop),
+    retractall(animacao(_)),
+    send(J, clear),
+
+    new(Window, dialog('You Win!')),
+
+    new(Msg, text('You Win!', center)),
+    send(Msg, font, font(times, bold, 40)),
+    send(Msg, colour, green),
+    send(Window, append, Msg),
+    send(Window, open), !.
+
 
 % Verifica se a vida é maior que zero
 verifica_vida(Vida) :-
@@ -62,7 +95,4 @@ atualizar_tiros :-
     retractall(tiros_ativos(_)),
     assertz(tiros_ativos(NovosTiros)).
 
-% Mostra tiros ativos
-mostrar_tiros :-
-    tiros_ativos(Tiros),
-    write("Tiros ativos: "), write(Tiros), nl.
+
