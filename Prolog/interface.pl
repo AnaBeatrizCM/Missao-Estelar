@@ -12,7 +12,7 @@
 start_game :-
     Width = 350,
     Height = 600,
-    new(Window, picture('Missão Estelar')),
+    new(Window, picture('Missao Estelar')),
     send(Window, scrollbars, none),
     send(Window, size, size(Width, Height)),
     send(Window, open),
