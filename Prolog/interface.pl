@@ -22,6 +22,7 @@ start_game :-
         handler(keyboard, message(@prolog, tecla_pressionada, @event?key))),
         send(Window, focus, Window),
         iniciar_animacao.
+
 % Desenha a nave na posição atual
 desenhar_nave :-
     janela(Window),
@@ -33,7 +34,6 @@ desenhar_nave :-
     XDraw is X - IW // 2,
     YDraw is Height - IH,
     send(Window, display, NaveImg, point(XDraw, YDraw)).
-
 
 % Desenha todos os tiros na tela
 desenhar_tiros :-
@@ -51,14 +51,15 @@ desenhar_tiros :-
         )
     ).
 
-
 iniciar_animacao :-
     new(Timer, timer(0.05, message(@prolog, atualizar_tela))),
     assertz(animacao(Timer)),
     send(Timer, start).
 
-
 atualizar_tela :-
+    janela(Window),
+    object(Window),
+    get(Window, displayed, @on), !,
     atualizar_tiros,
     atualizar_tiros_inimigos,
     verificar_colisoes_tiros,
@@ -67,7 +68,6 @@ atualizar_tela :-
     mover_invasores,
     redesenhar_tiros.
 
-
 redesenhar_tiros :-
     janela(Janela),
     send(Janela, clear),            % Limpa a tela
@@ -75,10 +75,5 @@ redesenhar_tiros :-
     desenhar_invasores,
     desenhar_tiros,                 % desenha os tiros da nave com forma de linha
     desenhar_tiros_inimigos.       % mantém os tiros inimigos como estão
-
-criar_janela :-
-    new(J, window('Missao Estelar', size(400, 600))),
-    assertz(janela(J)),
-    send(J, open).
 
 

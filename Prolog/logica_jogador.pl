@@ -7,8 +7,7 @@
 nave(3, 4, 175, 0).
 tiros_ativos([]).
 
-% Predicado para tomar dano // MEXI
-
+% Predicado para tomar dano 
 tomar_dano(nave(Vida, Vel, PosX, PosY), nave(NovaVida, Vel, PosX, PosY)) :-
     verifica_vida(Vida),
     (Vida - 1 =< 0 ->
@@ -17,9 +16,7 @@ tomar_dano(nave(Vida, Vel, PosX, PosY), nave(NovaVida, Vel, PosX, PosY)) :-
         game_over();
         NovaVida is Vida - 1).
 
-% Mensagem de game over     MEXI AQUI
-
-
+% Mensagem de game over  
 game_over :-
 
     janela(J),
@@ -34,7 +31,6 @@ game_over :-
     send(Window, open).
 
 % Criando predicado para ganho
-
 you_win :-
     janela(J),
     animacao(Timer),
