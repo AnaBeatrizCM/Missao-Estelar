@@ -38,9 +38,10 @@ Para a versão em Prolog:
 # :video_game: Controles do jogo
 
 Mover para a esquerda: Tecla ← ou A
+
 Mover para a direita: Tecla → ou D
+
 Atirar: Barra de espaço
-Sair do jogo: Tecla Esc (pode variar de acordo com a versão)
 
 
 ## :busts_in_silhouette: Equipe do Missão Estelar
